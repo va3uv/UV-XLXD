@@ -43,6 +43,12 @@ bool CDextraProtocol::Initialize(const char *type, int ptype, const uint16 port,
 	if (! CProtocol::Init())
 		return false;
 
+	// open DEXTRA UDP socket
+	if (!m_Socket.Open(DEXTRA_PORT)) {
+		std::cerr << "[ERROR] CDextraProtocol failed to open UDP socket on port " << DEXTRA_PORT << std::endl;
+		return false;
+	}
+
 	// update time
 	m_LastKeepaliveTime.Now();
 	m_LastPeersLinkTime.Now();
