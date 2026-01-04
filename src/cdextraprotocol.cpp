@@ -382,6 +382,11 @@ void CDextraProtocol::HandlePeerLinks(void)
 		{
 			// resolve again peer's IP in case it's a dynamic IP
 			(*it).ResolveIp();
+			// DEBUG: Print all info before sending
+			std::cout << "[DEBUG] About to send DEXTRA connect: Callsign=" << (*it).GetCallsign()
+					  << ", IP=" << (*it).GetIp()
+					  << ", Modules=" << (*it).GetModules()
+					  << ", Port=" << DEXTRA_PORT << std::endl;
 			// send connect packet to re-initiate peer link
 			EncodeConnectPacket(&buffer, (*it).GetModules());
 			m_Socket.Send(buffer, (*it).GetIp(), DEXTRA_PORT);
