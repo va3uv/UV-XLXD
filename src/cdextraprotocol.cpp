@@ -43,6 +43,12 @@ bool CDextraProtocol::Initialize(const char *type, int ptype, const uint16 port,
 	if (! CProtocol::Init())
 		return false;
 
+	// open DEXTRA UDP socket
+	if (!m_Socket.Open(DEXTRA_PORT)) {
+		std::cerr << "[ERROR] CDextraProtocol failed to open UDP socket on port " << DEXTRA_PORT << std::endl;
+		return false;
+	}
+
 	// update time
 	m_LastKeepaliveTime.Now();
 	m_LastPeersLinkTime.Now();
@@ -389,8 +395,12 @@ void CDextraProtocol::HandlePeerLinks(void)
 					  << ", Port=" << DEXTRA_PORT << std::endl;
 			// send connect packet to re-initiate peer link
 			EncodeConnectPacket(&buffer, (*it).GetModules());
-			m_Socket.Send(buffer, (*it).GetIp(), DEXTRA_PORT);
-			std::cout << "Sending connect packet to XRF peer " << (*it).GetCallsign() << " @ " << (*it).GetIp() << " for module " << (*it).GetModules()[1] << " (module " << (*it).GetModules()[0] << ")" << std::endl;
+			int send_result = m_Socket.Send(buffer, (*it).GetIp(), DEXTRA_PORT);
+			if (send_result < 0) {
+				std::cerr << "[ERROR] DEXTRA m_Socket.Send failed: return=" << send_result << ", errno=" << errno << std::endl;
+			} else {
+				std::cout << "Sending connect packet to XRF peer " << (*it).GetCallsign() << " @ " << (*it).GetIp() << " for module " << (*it).GetModules()[1] << " (module " << (*it).GetModules()[0] << ")" << std::endl;
+			}
 		}
 	}
 
