@@ -378,10 +378,13 @@ void CXlxProtocol::HandlePeerLinks(void)
     {
         CCallsignListItem *item = &((list->data())[i]);
         const char *cs = item->GetCallsign();
-        // Filter out XRF peers entirely; only DEXTRA will handle them
+        // Debug: Show every peer and what happens
+        std::cout << "[DEBUG][XLX] Peer: " << cs;
         if (cs[0] == 'X' && cs[1] == 'R' && cs[2] == 'F') {
-            // Do not process this peer in XLX handler
+            std::cout << " -- Skipped (XRF, handled by DEXTRA)" << std::endl;
             continue;
+        } else {
+            std::cout << " -- Processing as XLX peer" << std::endl;
         }
         // Only send XLX connect for non-XRF peers
         if ( peers->FindPeer(item->GetCallsign(), PROTOCOL_XLX) == NULL )
