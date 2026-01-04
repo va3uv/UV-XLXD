@@ -389,8 +389,12 @@ void CDextraProtocol::HandlePeerLinks(void)
 					  << ", Port=" << DEXTRA_PORT << std::endl;
 			// send connect packet to re-initiate peer link
 			EncodeConnectPacket(&buffer, (*it).GetModules());
-			m_Socket.Send(buffer, (*it).GetIp(), DEXTRA_PORT);
-			std::cout << "Sending connect packet to XRF peer " << (*it).GetCallsign() << " @ " << (*it).GetIp() << " for module " << (*it).GetModules()[1] << " (module " << (*it).GetModules()[0] << ")" << std::endl;
+			int send_result = m_Socket.Send(buffer, (*it).GetIp(), DEXTRA_PORT);
+			if (send_result < 0) {
+				std::cerr << "[ERROR] DEXTRA m_Socket.Send failed: return=" << send_result << ", errno=" << errno << std::endl;
+			} else {
+				std::cout << "Sending connect packet to XRF peer " << (*it).GetCallsign() << " @ " << (*it).GetIp() << " for module " << (*it).GetModules()[1] << " (module " << (*it).GetModules()[0] << ")" << std::endl;
+			}
 		}
 	}
 
