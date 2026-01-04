@@ -378,16 +378,15 @@ void CXlxProtocol::HandlePeerLinks(void)
     {
         CCallsignListItem *item = &((list->data())[i]);
         const char *cs = item->GetCallsign();
-        if ( cs[0] == 'X' && cs[1] == 'R' && cs[2] == 'F' ) {
-            // Only send DEXTRA connect for XRF peers (skip XLX connect)
-            // Place DEXTRA connect logic here if needed
+        // Guarantee: Only one connect request per peer
+        if (cs[0] == 'X' && cs[1] == 'R' && cs[2] == 'F') {
+            // Absolutely skip XLX connect for XRF peers (DEXTRA handled elsewhere)
             continue;
         }
+        // Only send XLX connect for non-XRF peers
         if ( peers->FindPeer(item->GetCallsign(), PROTOCOL_XLX) == NULL )
         {
-            // resolve again peer's IP in case it's a dynamic IP
             item->ResolveIp();
-            // send connect packet to re-initiate peer link
             EncodeConnectPacket(&buffer, item->GetModules());
             m_Socket.Send(buffer, item->GetIp(), XLX_PORT);
             std::cout << "Sending connect packet to XLX peer " << item->GetCallsign() << " @ " << item->GetIp() << " for modules " << item->GetModules() << std::endl;
