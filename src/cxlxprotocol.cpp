@@ -378,9 +378,9 @@ void CXlxProtocol::HandlePeerLinks(void)
     {
         CCallsignListItem *item = &((list->data())[i]);
         const char *cs = item->GetCallsign();
-        // Guarantee: Only one connect request per peer
+        // Filter out XRF peers entirely; only DEXTRA will handle them
         if (cs[0] == 'X' && cs[1] == 'R' && cs[2] == 'F') {
-            // Absolutely skip XLX connect for XRF peers (DEXTRA handled elsewhere)
+            // Do not process this peer in XLX handler
             continue;
         }
         // Only send XLX connect for non-XRF peers
